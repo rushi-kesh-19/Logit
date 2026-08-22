@@ -1,5 +1,7 @@
 package com.example.springbootpractice.controller;
 
+import com.example.springbootpractice.services.JournalEntryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -11,25 +13,27 @@ import java.util.Map;
 @RequestMapping("/journal")
 public class JournalEntryController {
 
-    private Map<Long, JournalEntry> journalEntries = new HashMap<Long, JournalEntry>();
+    @Autowired
+    private JournalEntryService journalEntryService;
+
     @GetMapping
     public List<JournalEntry> getJournal() {
-        return new ArrayList<>(journalEntries.values());
+        return null;
     }
+
     @PostMapping
     public boolean createJournal(@RequestBody JournalEntry entry) {
-        journalEntries.put(entry.getId(), entry);
+        journalEntryService.saveEntry(entry);
         return true;
     }
 
     @GetMapping("id/{myid}")
     public JournalEntry getjournalbyid(@PathVariable Long myid){
-        return journalEntries.get(myid);
+        return null;
     }
 
     @PutMapping("id/{myid}")
     public boolean editjournal(@PathVariable Long myid, @RequestBody JournalEntry entry) {
-        journalEntries.put(myid, entry);
         return true;
     }
 }
