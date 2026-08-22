@@ -18,7 +18,7 @@ public class JournalEntryController {
 
     @GetMapping
     public List<JournalEntry> getJournal() {
-        return null;
+        return journalEntryService.getEntries();
     }
 
     @PostMapping

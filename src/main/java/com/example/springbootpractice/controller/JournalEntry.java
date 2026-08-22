@@ -8,7 +8,7 @@ import java.util.Date;
 @Document(collection = "journal_entries") // map table row to this
 public class JournalEntry {
 
-    @Id // mapping primary key
+    @Id // mapping primary key, mongodb creates Objectid if not provided // If existing id is provided, the row data will be updated
     public String id ;
     public String title;
     public String desc;
