@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Document // map table row to this
+@Document(collection = "journal_entries") // map table row to this
 public class JournalEntry {
 
     @Id // mapping primary key
