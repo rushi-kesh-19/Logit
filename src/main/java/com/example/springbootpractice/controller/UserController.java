@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
@@ -25,14 +25,31 @@ public class UserController {
         return userService.getUsers();
     }
 
-    @GetMapping("/user/{id}")
-    public User getuser(@PathVariable ObjectId id){
-        return userService.getUserbyId(id);
+    @GetMapping("/user")
+    public User getuser(@PathVariable User user){
+        return userService.getUserbyUsername(user);
     }
 
     @PostMapping
     public void saveUser(@RequestBody User user){
         userService.saveUser(user);
+    }
+
+    @PutMapping("/user")
+    public ResponseEntity<?> updateUser (@RequestBody User user){
+        User old = userService.getUserbyUsername(user);
+
+        if (old != null){
+            old.setUsername(user.getUsername());
+            old.setPassword(user.getPassword());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/entry")
+    public void saveEntry(@RequestBody ObjectId id,  JournalEntry newEntry){
+
     }
 
 

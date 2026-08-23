@@ -25,8 +25,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUserbyId(ObjectId myid){// optional<JournalEntry> can be used instead of orElse to handle null
-        return userRepository.findById(myid).orElse(null);
+    public User getUserbyUsername(User user){// optional<JournalEntry> can be used instead of orElse to handle null
+        return userRepository.findUserByUsername(user.getUsername());
     }
 
 }
