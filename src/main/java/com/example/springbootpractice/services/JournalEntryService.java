@@ -1,7 +1,9 @@
 package com.example.springbootpractice.services;
 
 import com.example.springbootpractice.entity.JournalEntry;
+import com.example.springbootpractice.entity.User;
 import com.example.springbootpractice.repository.JournalEntryRepository;
+import com.example.springbootpractice.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,10 @@ public class JournalEntryService {
 
     @Autowired
     private JournalEntryRepository journalEntryRepository;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
     public void saveEntry(JournalEntry journalEntry){
         journalEntry.setDate(LocalDateTime.now());
@@ -25,6 +31,14 @@ public class JournalEntryService {
     }
     public JournalEntry getEntrybyId(ObjectId myid){// optional<JournalEntry> can be used instead of orElse to handle null
         return journalEntryRepository.findById(myid).orElse(null);
+    }
+
+    public void setEntry (String username, JournalEntry newentry ){
+        User old = userService.getUserbyUsername(username);
+        newentry.setDate(LocalDateTime.now());
+        JournalEntry saved = journalEntryRepository.save(newentry);
+        old.getJournalEntries().add(saved);
+        userRepository.save(old);
     }
 
 }

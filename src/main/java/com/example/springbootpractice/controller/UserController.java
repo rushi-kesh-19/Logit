@@ -27,7 +27,7 @@ public class UserController {
 
     @GetMapping("/user")
     public User getuser(@PathVariable User user){
-        return userService.getUserbyUsername(user);
+        return userService.getUserbyUsername(user.getUsername());
     }
 
     @PostMapping
@@ -37,19 +37,15 @@ public class UserController {
 
     @PutMapping("/user")
     public ResponseEntity<?> updateUser (@RequestBody User user){
-        User old = userService.getUserbyUsername(user);
+        User old = userService.getUserbyUsername(user.getUsername());
 
         if (old != null){
             old.setUsername(user.getUsername());
             old.setPassword(user.getPassword());
-            return new ResponseEntity<>(HttpStatus.OK);
+            userService.saveUser(old);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @PostMapping("/entry")
-    public void saveEntry(@RequestBody ObjectId id,  JournalEntry newEntry){
-
     }
 
 

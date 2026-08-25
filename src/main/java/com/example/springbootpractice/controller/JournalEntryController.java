@@ -38,10 +38,16 @@ public class JournalEntryController {
         JournalEntry old = journalEntryService.getEntrybyId(myid);
 
         if (old != null){
-            old.setTitle(newentry.getTitle()!= null && !newentry.getTitle().equals("") ? newentry.getTitle(): old.getTitle());
+            old.setTitle(!newentry.getTitle().equals("") ? newentry.getTitle(): old.getTitle());
             old.setDesc(newentry.getDesc()!= null && !newentry.getDesc().equals("") ? newentry.getDesc(): old.getDesc());
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/{username}")
+    public ResponseEntity<?> saveEntry(@RequestBody JournalEntry newEntry, @PathVariable String username){
+        journalEntryService.setEntry(username, newEntry);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

@@ -25,8 +25,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUserbyUsername(User user){// optional<JournalEntry> can be used instead of orElse to handle null
-        return userRepository.findUserByUsername(user.getUsername());
+    public User getUserbyUsername(String username){// optional<JournalEntry> can be used instead of orElse to handle null
+        return userRepository.findUserByUsername(username);
     }
+
+
 
 }
