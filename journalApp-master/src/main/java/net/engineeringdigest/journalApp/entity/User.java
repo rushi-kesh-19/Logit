@@ -1,4 +1,5 @@
-package com.example.springbootpractice.entity;
+package net.engineeringdigest.journalApp.entity;
+
 
 import lombok.*;
 import org.bson.types.ObjectId;
@@ -11,18 +12,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "users")
-@Data // lombok handles getting and setting of the values, so u can add conditions/rules along with annotations
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
     @Id
-    private ObjectId id ;
-    @Indexed(unique = true)//faster lookups
+    private ObjectId id;
+    @Indexed(unique = true)
     @NonNull
-    private String username;
+    private String userName;
+    private String email;
+    private boolean sentimentAnalysis;
     @NonNull
     private String password;
     @DBRef
-    public List<JournalEntry> journalEntries = new ArrayList<>(); // when initialized this should not be null , should be [] array
+    private List<JournalEntry> journalEntries = new ArrayList<>();
+    private List<String> roles;
 }

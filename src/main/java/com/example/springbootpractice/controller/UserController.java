@@ -4,11 +4,16 @@ import com.example.springbootpractice.entity.JournalEntry;
 import com.example.springbootpractice.entity.User;
 import com.example.springbootpractice.repository.UserRepository;
 import com.example.springbootpractice.services.JournalEntryService;
+import com.example.springbootpractice.services.UserDetailsServiceImpl;
 import com.example.springbootpractice.services.UserService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +25,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @GetMapping
     public List<User> getusers(){
         return userService.getUsers();
@@ -30,22 +40,16 @@ public class UserController {
         return userService.getUserbyUsername(user.getUsername());
     }
 
-    @PostMapping
-    public void saveUser(@RequestBody User user){
-        userService.saveUser(user);
-    }
-
-    @PutMapping("/user")
+    @PutMapping
     public ResponseEntity<?> updateUser (@RequestBody User user){
-        User old = userService.getUserbyUsername(user.getUsername());
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User old = userService.getUserbyUsername(username);
 
-        if (old != null){
             old.setUsername(user.getUsername());
             old.setPassword(user.getPassword());
             userService.saveUser(old);
             return new ResponseEntity<>(HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 

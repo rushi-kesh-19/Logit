@@ -6,7 +6,10 @@ import com.example.springbootpractice.repository.JournalEntryRepository;
 import com.example.springbootpractice.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,12 +36,32 @@ public class JournalEntryService {
         return journalEntryRepository.findById(myid).orElse(null);
     }
 
+    @Transactional
     public void setEntry (String username, JournalEntry newentry ){
-        User old = userService.getUserbyUsername(username);
+
         newentry.setDate(LocalDateTime.now());
         JournalEntry saved = journalEntryRepository.save(newentry);
+        User old = userService.getUserbyUsername(username);
         old.getJournalEntries().add(saved);
         userRepository.save(old);
     }
 
+    @Transactional
+    public void deleteEntry(ObjectId id, String username) {
+        User user = userService.getUserbyUsername(username);
+        user.getJournalEntries().removeIf(x -> x.getId() == id);
+        userService.saveUser(user);
+        journalEntryRepository.deleteById(id);
+
+    }
+
+    public void editEntry(ObjectId id, JournalEntry newEntry) {
+        JournalEntry old = journalEntryRepository.findById(id).orElse(null);
+
+        if (old != null){
+            old.setTitle(newEntry.getTitle());
+            old.setDesc(newEntry.getDesc());
+            journalEntryRepository.save(old);
+        }
+    }
 }
