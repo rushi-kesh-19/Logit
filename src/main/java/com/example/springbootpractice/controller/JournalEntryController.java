@@ -1,8 +1,10 @@
 package com.example.springbootpractice.controller;
 
 import com.example.springbootpractice.entity.JournalEntry;
+import com.example.springbootpractice.entity.User;
 import com.example.springbootpractice.repository.JournalEntryRepository;
 import com.example.springbootpractice.services.JournalEntryService;
+import com.example.springbootpractice.services.UserService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,8 @@ public class JournalEntryController {
     private JournalEntryService journalEntryService;
     @Autowired
     private JournalEntryRepository journalEntryRepository;
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<List<JournalEntry>> getJournal() {
@@ -32,20 +36,25 @@ public class JournalEntryController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> createJournal(@RequestBody JournalEntry entry) {
-        journalEntryService.saveEntry(entry);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("id/{id}")
+    public ResponseEntity<JournalEntry> getjournalbyid(@PathVariable ObjectId id){
+        if (journalEntryService.getEntrybyId(id) != null) {
+            return new ResponseEntity<JournalEntry>(journalEntryService.getEntrybyId(id), HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
-    @GetMapping("id/{myid}")
-    public ResponseEntity<JournalEntry> getjournalbyid(@PathVariable ObjectId myid){
-        return new ResponseEntity<JournalEntry>( journalEntryService.getEntrybyId(myid), HttpStatus.OK);
-    }
+    @PutMapping("id/{id}")
+    public ResponseEntity<?> editjournal(@PathVariable ObjectId id, @RequestBody JournalEntry newentry) {
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
 
-    @PutMapping("id/{myid}")
-    public ResponseEntity<?> editjournal(@PathVariable ObjectId myid, @RequestBody JournalEntry newentry) {
-        JournalEntry old = journalEntryService.getEntrybyId(myid);
+        if (journalEntryService.checkEntryInUser(user, id)){
+
+        }
+        JournalEntry old = journalEntryService.getEntrybyId(id);
 
         if (old != null){
             old.setTitle(!newentry.getTitle().equals("") ? newentry.getTitle(): old.getTitle());
@@ -68,8 +77,13 @@ public class JournalEntryController {
     public ResponseEntity<?> deleteEntry (@PathVariable ObjectId id){
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        journalEntryService.deleteEntry(id, username);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+
+        User user = userService.getUserbyUsername(username);
+        if (journalEntryService.checkEntryInUser(user, id)) {
+            journalEntryService.deleteEntry(id, username);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }
 

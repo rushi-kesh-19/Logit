@@ -36,8 +36,10 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public User getuser(@PathVariable User user){
-        return userService.getUserbyUsername(user.getUsername());
+    public User getuser(){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userService.getUserbyUsername(username);
     }
 
     @PutMapping

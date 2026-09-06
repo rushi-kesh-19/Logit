@@ -27,6 +27,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void updateUser(User user){
+        userRepository.save(user);
+    }
+
     public List<User> getUsers(){
         return userRepository.findAll();
     }
@@ -34,6 +38,7 @@ public class UserService {
     public User getUserbyUsername(String username){// optional<JournalEntry> can be used instead of orElse to handle null
         return userRepository.findUserByUsername(username);
     }
+
 
 
 

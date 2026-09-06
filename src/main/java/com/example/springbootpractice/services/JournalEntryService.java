@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JournalEntryService {
@@ -49,10 +50,9 @@ public class JournalEntryService {
     @Transactional
     public void deleteEntry(ObjectId id, String username) {
         User user = userService.getUserbyUsername(username);
-        user.getJournalEntries().removeIf(x -> x.getId() == id);
-        userService.saveUser(user);
+        user.getJournalEntries().removeIf(x -> id.equals(x.getId()));
+        userService.updateUser(user);
         journalEntryRepository.deleteById(id);
-
     }
 
     public void editEntry(ObjectId id, JournalEntry newEntry) {
@@ -63,5 +63,9 @@ public class JournalEntryService {
             old.setDesc(newEntry.getDesc());
             journalEntryRepository.save(old);
         }
+    }
+
+    public boolean checkEntryInUser(User user, ObjectId id) {
+        return user.getJournalEntries().stream().anyMatch(x -> id.equals(x.getId()));
     }
 }
