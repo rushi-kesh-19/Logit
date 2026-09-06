@@ -48,21 +48,32 @@ public class JournalEntryService {
     }
 
     @Transactional
-    public void deleteEntry(ObjectId id, String username) {
-        User user = userService.getUserbyUsername(username);
-        user.getJournalEntries().removeIf(x -> id.equals(x.getId()));
-        userService.updateUser(user);
-        journalEntryRepository.deleteById(id);
+    public boolean deleteEntryById(ObjectId id, String username) {
+        try {
+            User user = userService.getUserbyUsername(username);
+            boolean removed = user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+            if (removed) {
+                userService.updateUser(user);//can also do userRepository.save(user)
+                journalEntryRepository.deleteById(id);
+                return true;
+            }
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 
-    public void editEntry(ObjectId id, JournalEntry newEntry) {
-        JournalEntry old = journalEntryRepository.findById(id).orElse(null);
-
+    @Transactional
+    public boolean editEntry(ObjectId id, JournalEntry newentry, String username) {
+        JournalEntry old = userService.getUserbyUsername(username).getJournalEntries().stream().filter(x->x.getId().equals(id)).findAny().orElse(null);
         if (old != null){
-            old.setTitle(newEntry.getTitle());
-            old.setDesc(newEntry.getDesc());
+            old.setTitle(!newentry.getTitle().equals("") ? newentry.getTitle(): old.getTitle());
+            old.setDesc(newentry.getDesc()!= null && !newentry.getDesc().equals("") ? newentry.getDesc(): old.getDesc());
             journalEntryRepository.save(old);
+            return true;
         }
+        return false;
     }
 
     public boolean checkEntryInUser(User user, ObjectId id) {

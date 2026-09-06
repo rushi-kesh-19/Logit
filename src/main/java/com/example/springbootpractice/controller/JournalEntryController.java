@@ -50,19 +50,11 @@ public class JournalEntryController {
     public ResponseEntity<?> editjournal(@PathVariable ObjectId id, @RequestBody JournalEntry newentry) {
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-
-        if (journalEntryService.checkEntryInUser(user, id)){
-
+        boolean edited = journalEntryService.editEntry(id, newentry, username);
+        if (edited){
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
-        JournalEntry old = journalEntryService.getEntrybyId(id);
-
-        if (old != null){
-            old.setTitle(!newentry.getTitle().equals("") ? newentry.getTitle(): old.getTitle());
-            old.setDesc(newentry.getDesc()!= null && !newentry.getDesc().equals("") ? newentry.getDesc(): old.getDesc());
-            journalEntryRepository.save(old);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping
@@ -78,12 +70,12 @@ public class JournalEntryController {
         Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
-        User user = userService.getUserbyUsername(username);
-        if (journalEntryService.checkEntryInUser(user, id)) {
-            journalEntryService.deleteEntry(id, username);
+        boolean removed = journalEntryService.deleteEntryById(id, username);
+
+        if (removed) {
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
     }
 
