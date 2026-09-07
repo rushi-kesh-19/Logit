@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
-public class UserController {
+@RequestMapping("/admin")
+public class AdminController {
 
     @Autowired
     private UserService userService;
@@ -30,16 +30,33 @@ public class UserController {
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    @GetMapping
+    public List<User> getusers() {
+        return userService.getUsers();
+    }
+
     @GetMapping("/user")
-    public User getuser(){
-        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+    public User getuser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         return userService.getUserbyUsername(username);
     }
 
+    @PostMapping
+    public ResponseEntity<?> createAdmin(@RequestBody User user){
+        try {
+            userService.saveAdmin(user);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+
     @PutMapping
-    public ResponseEntity<?> updateUser (@RequestBody User user){
-        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
         boolean updated = userService.updateUser(user, username);
@@ -48,7 +65,6 @@ public class UserController {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
+
     }
-
-
 }
