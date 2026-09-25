@@ -1,8 +1,10 @@
 package com.example.springbootpractice.controller;
 
+import com.example.springbootpractice.api.WeatherResponse;
 import com.example.springbootpractice.entity.User;
 import com.example.springbootpractice.repository.UserRepository;
 import com.example.springbootpractice.services.UserService;
+import com.example.springbootpractice.services.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,17 @@ public class Public {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private WeatherService weatherService;
+
     @GetMapping
     public ResponseEntity<String> hello(){
-        return new ResponseEntity<>("Hello World", HttpStatus.OK);
+        WeatherResponse weatherData = weatherService.getWeather("Mumbai");
+        String feels = "";
+        if (weatherData != null) {
+            feels = "Today feels like" + weatherData.current.getFeelslike();
+        }
+        return new ResponseEntity<>("Hello World" + feels, HttpStatus.OK);
     }
 
     @PostMapping("user")

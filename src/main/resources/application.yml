@@ -1,0 +1,11 @@
+spring:
+  data:
+    mongodb:
+      auto-index-creation: true
+
+  mongodb:
+    uri: mongodb+srv://rushi_kesh219:bumblebee@cluster0.5hvsu8b.mongodb.net/
+    database: journaldb
+
+  main:
+    allow-circular-references: true
