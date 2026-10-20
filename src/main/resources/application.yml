@@ -9,3 +9,5 @@ spring:
 
   main:
     allow-circular-references: true
+
+eleven_api: sk_def73cd73371acc4210b5e1b3953b9bbc45257ea5720c52e

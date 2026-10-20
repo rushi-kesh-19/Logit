@@ -24,6 +24,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .withUsername(user.getUsername())
                 .password(user.getPassword())
                 .roles(user.getRoles().toArray(new String[0]))
-                .build();
+                .build(); // we are creating/building and returning an object with the user details for the spring security to keep with it (do auth later, since we also set the roles)
     }
 }
