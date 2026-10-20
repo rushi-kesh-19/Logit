@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class JournalEntry {
 
-    @Id // mapping primary key, mongodb creates Objectid if not provided // If existing id is provided, the row data will be updated
+    @Id // mapping primary key, mongodb creates ObjectId if not provided // If existing id is provided, the row data will be updated
     public ObjectId id ;
     @NonNull
     public String title;

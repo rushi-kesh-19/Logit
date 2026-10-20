@@ -18,7 +18,9 @@ import java.util.Map;
 @Component
 public class WeatherService {
 
-    String api= "https://api.weatherstack.com/current?access_key=YOUR_ACCESS_KEY&query=CITY";
+    @Autowired
+    AppConfigService appConfigService;
+
     String accessKey = "9a4e6657fdf46cc8cb7024f306ed1391";
 
     private static final String ELEVENLABS_TTS_URL =
@@ -32,7 +34,7 @@ public class WeatherService {
 
 
     public WeatherResponse getWeather(String city){
-        String uapi = api.replace("YOUR_ACCESS_KEY", accessKey).replace("CITY", city);
+        String uapi = appConfigService.appCache.get("WEATHER_API").replace("YOUR_ACCESS_KEY", accessKey).replace("CITY", city);
         ResponseEntity<WeatherResponse> responseEntity = restTemplate.exchange(uapi, HttpMethod.GET, null, WeatherResponse.class);
         WeatherResponse response = responseEntity.getBody();
         return response;
@@ -48,7 +50,7 @@ public class WeatherService {
         HttpEntity<String> httpEntity= new HttpEntity<>(requestBody, httpHeader);
         // you can send the user details by creating an user object with those properties(username & password) and do HttpEntity<User>
 
-        ResponseEntity<WeatherResponse> responseEntity = restTemplate.exchange(api, HttpMethod.POST, httpEntity, WeatherResponse.class);
+        ResponseEntity<WeatherResponse> responseEntity = restTemplate.exchange("", HttpMethod.POST, httpEntity, WeatherResponse.class);
         return responseEntity.getBody();
     }
 

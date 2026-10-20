@@ -3,6 +3,7 @@ package com.example.springbootpractice.controller;
 import com.example.springbootpractice.entity.JournalEntry;
 import com.example.springbootpractice.entity.User;
 import com.example.springbootpractice.repository.UserRepository;
+import com.example.springbootpractice.services.AppConfigService;
 import com.example.springbootpractice.services.JournalEntryService;
 import com.example.springbootpractice.services.UserDetailsServiceImpl;
 import com.example.springbootpractice.services.UserService;
@@ -27,6 +28,9 @@ public class AdminController {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private AppConfigService appConfigService;
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -66,5 +70,11 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
 
+    }
+
+    @GetMapping("/clear-app-cache")
+    public ResponseEntity<?> clearCache(){
+        appConfigService.setAppCache();
+        return ResponseEntity.ok().build();
     }
 }
